@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+<!--    <preConditions>-->
+<!--        <runningAs  username="liquibase"/>-->
+<!--    </preConditions>-->
+
+    <changeSet  id="Beer change log 1.0"  author="alla0911">
+        <createTable tableName="Beers"  remarks="Beer table">
+            <column name="INTERNAL_ID" type="BIGINT" remarks="Beer internal id" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(300)" remarks="Beer name"/>
+            <column name="DESCRIPTION" type="VARCHAR(2000)" remarks="Beer description"/>
+            <column name="MEAN_VALUE_TEMP" type="DOUBLE" remarks="Beer mean value for temperature"/>
+        </createTable>
+
+        <!--        <createSequence sequenceName="BEER_EXECUTION_SEQ" startValue="1" incrementBy="1"/>-->
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:~/beerTestDB/beerdb;AUTO_SERVER=TRUE;
+    username: beer
+    password: beer
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml

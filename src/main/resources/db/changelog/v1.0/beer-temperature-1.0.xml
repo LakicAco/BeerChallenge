@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+<!--    <preConditions>-->
+<!--        <runningAs  username="liquibase"/>-->
+<!--    </preConditions>-->
+
+    <changeSet  id="Beer temperature change log 1.0"  author="alla0911">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="BEER_TEMPERATURES"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="BEER_TEMPERATURES" remarks="Beer temperatures">
+            <column name="ID" type="BIGINT" autoIncrement="true" remarks="Primary key ID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_BEER_TEMPERATURES"/>
+            </column>
+            <column name="BEER_ID" type="BIGINT" remarks="Beer ID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TEMP_VALUE" type="DOUBLE" remarks="Value"/>
+            <column name="TEMP_UNIT" type="VARCHAR(50)" remarks="Unit"/>
+            <column name="DURATION" type="BIGINT" remarks="Duration"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="BEER_TEMP_FK"
+                                 baseColumnNames="BEER_ID" baseTableName="BEER_TEMPERATURES"
+                                 referencedColumnNames="INTERNAL_ID" referencedTableName="BEERS"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+</databaseChangeLog>
