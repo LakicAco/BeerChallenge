@@ -50,6 +50,7 @@ public class BeerService {
         }
     }
 
+    @LogEvent
     public BeerDto findById(Long id){
         Optional<BeerEntity> beer = beerRepository.findById(id);
         if (beer.isPresent()) {
@@ -78,6 +79,7 @@ public class BeerService {
             return beers.stream().map(this::getBeerDto).collect(Collectors.toList());
         }
         }
+    @LogEvent
     public void init(){
 
         List<BeerEntity> beers = new ArrayList<>();

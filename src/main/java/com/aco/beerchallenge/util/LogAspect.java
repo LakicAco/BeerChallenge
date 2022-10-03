@@ -1,5 +1,6 @@
 package com.aco.beerchallenge.util;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -8,8 +9,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class LogAspect {
     @Before("@annotation(com.aco.beerchallenge.util.LogEvent)")
-    public void logEvent () {
-        //LogEvent event = LogAspect.class.getAnnotation(LogEvent.class);
-        System.out.println("BeerChallenge method called.");
+    public void logEvent (JoinPoint joinPoint) {
+        System.out.println("BeerChallenge method '" + joinPoint.getSignature().getName() + "' called.");
     }
 }
