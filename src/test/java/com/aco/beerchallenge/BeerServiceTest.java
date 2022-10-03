@@ -5,28 +5,21 @@ import com.aco.beerchallenge.service.mapping.BeerJson;
 import com.aco.beerchallenge.service.mapping.MashTempJson;
 import com.aco.beerchallenge.service.mapping.MethodJson;
 import com.aco.beerchallenge.service.mapping.TempJson;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-//import org.junit.Before;
-//import org.junit.Test;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/*@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {BeerService.class})*/
 @SpringBootTest(properties = "spring.profiles.active=test")
 @PropertySource(value = "classpath:application-test.yml")
 public class BeerServiceTest {

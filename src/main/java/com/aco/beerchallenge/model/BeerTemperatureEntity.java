@@ -14,7 +14,7 @@ public class BeerTemperatureEntity {
     private Long id;
 
      @Column(name = "temp_unit")
-     @Enumerated(EnumType.STRING)
+     //@Enumerated(EnumType.STRING)
     private TemperatureUnit unit;
 
     @Column(name = "temp_value")
