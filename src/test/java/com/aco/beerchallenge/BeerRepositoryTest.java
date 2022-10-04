@@ -1,101 +1,100 @@
 package com.aco.beerchallenge;
 
+import com.aco.beerchallenge.model.BeerEntity;
+import com.aco.beerchallenge.repository.BeerRepositoryImpl;
 import com.aco.beerchallenge.service.BeerService;
 import com.aco.beerchallenge.service.mapping.BeerJson;
 import com.aco.beerchallenge.service.mapping.MashTempJson;
 import com.aco.beerchallenge.service.mapping.MethodJson;
 import com.aco.beerchallenge.service.mapping.TempJson;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import static org.junit.Assert.assertFalse;
 
 @SpringBootTest(properties = "spring.profiles.active=test")
 @PropertySource(value = "classpath:application-test.yml")
-public class BeerServiceTest {
+public class BeerRepositoryTest {
     @Autowired
-    private BeerService underTest;
-    private MethodJson mockedMethod;
-    private BeerJson mockedBeer;
+    private BeerRepositoryImpl underTest;
 
     @BeforeEach
     public void setUp() {
-        mockedBeer = new BeerJson();
+        BeerEntity beerBg = new BeerEntity();
 
-        mockedMethod = new MethodJson();
 
-        mockedBeer.setMethodJson(mockedMethod);
+        beerBg.setName("BG pivo");
+        beerBg.setDescription(("Beogradsko pivo"));
+        beerBg.setInternalId(77L);
+        beerBg.setMeanValueTemp(87.0);
+
+        BeerEntity beerVa = new BeerEntity();
+        beerVa.setName("Valjevsko");
+        beerVa.setDescription(("Valjevsko pivo"));
+        beerVa.setInternalId(75L);
+        beerVa.setMeanValueTemp(85.0);
+
+        BeerEntity beerZr = new BeerEntity();
+        beerZr.setName("Zajecarsko");
+        beerZr.setDescription(("Zajecarsko pivo"));
+        beerZr.setInternalId(79L);
+        beerZr.setMeanValueTemp(82.0);
+
+        List<BeerEntity> beers = new ArrayList<>();
+        beers.add(beerBg);
+        beers.add(beerVa);
+        beers.add(beerZr);
+
+        underTest.saveAll(beers);
+
+    }
+
+    @AfterEach
+    public void deleteAll() {
+
+        List<BeerEntity> beers = underTest.findAll();
+        for (BeerEntity beer : beers) {
+            underTest.deleteById(beer.getInternalId());
+        }
     }
 
     @Test
-    public void getOneTempAverage_Success() {
+    public void getOneBeerFindById() {
+        Optional<BeerEntity> beer = underTest.findById(77L);
 
-        TempJson mockedTemp = new TempJson();
-        mockedTemp.setUnit("celsius");
-        mockedTemp.setValue(65.0);
-
-
-        MashTempJson mockedMashTemp  = new MashTempJson();
-        mockedMashTemp.setDuration(75L);
-
-        mockedMashTemp.setTempJson(mockedTemp);
-        mockedMethod.setMashTemp(Collections.singletonList(mockedMashTemp));
-        mockedBeer.setMethodJson(mockedMethod);
-
-        Double average = underTest.getAverageTemp(mockedBeer.getMethodJson().getMashTemp());
-
-        assertThat(average, is(notNullValue()));
-        assertThat(average, is(65.0));
-
+        assertThat(beer.get().getName(), is("BG pivo"));
     }
 
     @Test
-    public void getThreeTempAverage_Success() {
+    public void getAllBeers() {
+        List<BeerEntity> beer = underTest.findAll();
 
-        TempJson mockedTemp1 = new TempJson();
-        mockedTemp1.setUnit("celsius");
-        mockedTemp1.setValue(45.0);
+        assertThat(beer.size(), is(3));
+    }
 
-        TempJson mockedTemp2 = new TempJson();
-        mockedTemp2.setUnit("celsius");
-        mockedTemp2.setValue(25.0);
+    @Test
+    public void deleteOneBeerFindById() {
+        Optional<BeerEntity> beer = underTest.findById(77L);
 
-        TempJson mockedTemp3 = new TempJson();
-        mockedTemp3.setUnit("celsius");
-        mockedTemp3.setValue(20.0);
+        assertThat(beer.get().getName(), is("BG pivo"));
 
-        MashTempJson mockedMashTemp1  = new MashTempJson();
-        mockedMashTemp1.setDuration(75L);
-        mockedMashTemp1.setTempJson(mockedTemp1);
-        MashTempJson mockedMashTemp2  = new MashTempJson();
-        mockedMashTemp2.setDuration(85L);
-        mockedMashTemp2.setTempJson(mockedTemp2);
-        MashTempJson mockedMashTemp3  = new MashTempJson();
-        mockedMashTemp3.setDuration(75L);
-        mockedMashTemp3.setTempJson(mockedTemp3);
+        underTest.deleteById(77L);
 
-        List<MashTempJson> mockedMashTemps = new ArrayList<>();
-        mockedMashTemps.add(mockedMashTemp1);
-        mockedMashTemps.add(mockedMashTemp2);
-        mockedMashTemps.add(mockedMashTemp3);
+        beer = underTest.findById(77L);
 
-        mockedMethod.setMashTemp(mockedMashTemps);
-        mockedBeer.setMethodJson(mockedMethod);
-
-        Double average = underTest.getAverageTemp(mockedBeer.getMethodJson().getMashTemp());
-
-        assertThat(average, is(notNullValue()));
-        assertThat(average, is(30.0));
-
+        assertFalse(beer.isPresent());
     }
 }
