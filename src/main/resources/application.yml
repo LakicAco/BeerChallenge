@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:file:~/beerTestDB/beerdb;AUTO_SERVER=TRUE;
+    url: jdbc:h2:file:~/beerDB/beerdb;AUTO_SERVER=TRUE;
     username: beer
     password: beer
     driver-class-name: org.h2.Driver

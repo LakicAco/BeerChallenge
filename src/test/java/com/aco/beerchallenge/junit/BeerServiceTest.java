@@ -1,4 +1,4 @@
-package com.aco.beerchallenge;
+package com.aco.beerchallenge.junit;
 
 import com.aco.beerchallenge.service.BeerService;
 import com.aco.beerchallenge.service.mapping.BeerJson;

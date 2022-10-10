@@ -1,13 +1,7 @@
-package com.aco.beerchallenge;
+package com.aco.beerchallenge.integration;
 
 import com.aco.beerchallenge.model.BeerEntity;
 import com.aco.beerchallenge.repository.BeerRepositoryImpl;
-import com.aco.beerchallenge.service.BeerService;
-import com.aco.beerchallenge.service.mapping.BeerJson;
-import com.aco.beerchallenge.service.mapping.MashTempJson;
-import com.aco.beerchallenge.service.mapping.MethodJson;
-import com.aco.beerchallenge.service.mapping.TempJson;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +79,7 @@ public class BeerRepositoryTest {
     }
 
     @Test
-    public void deleteOneBeerFindById() {
+    public void deleteOneBeerById() {
         Optional<BeerEntity> beer = underTest.findById(77L);
 
         assertThat(beer.get().getName(), is("BG pivo"));
