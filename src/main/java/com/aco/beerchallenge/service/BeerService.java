@@ -11,6 +11,7 @@ import com.aco.beerchallenge.repository.BeerRepositoryApi;
 import com.aco.beerchallenge.service.mapping.BeerJson;
 import com.aco.beerchallenge.service.mapping.MashTempJson;
 import com.aco.beerchallenge.service.mapping.TempJson;
+import com.aco.beerchallenge.util.CustomLocaleResolver;
 import com.aco.beerchallenge.util.LogEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -19,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,26 +31,39 @@ import java.util.stream.Collectors;
 public class BeerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BeerService.class);
+
+    private final HttpServletRequest httpServletRequest;
+
+    private   ResourceBundle rb;
+
+    private final CustomLocaleResolver customLocaleResolver;
+
     private final static String GENERATE_BEER_URL = "https://api.punkapi.com/v2/beers/random";
 
     //read all beers persisted,
     //get a beer by id,
     //delete a beer
 
-    @Autowired
+    //@Autowired
     private BeerRepositoryApi beerRepository;
 
-    public BeerService(BeerRepositoryApi beerRepository){
+    public BeerService(HttpServletRequest httpServletRequest, ResourceBundle resourceBundle, CustomLocaleResolver customLocaleResolver, BeerRepositoryApi beerRepository){
+        this.httpServletRequest = httpServletRequest;
+        this.rb = resourceBundle;
+        this.customLocaleResolver = customLocaleResolver;
         this.beerRepository = beerRepository;
     }
 
-    @LogEvent
-    public void delete(Long id){
-        try {
-            beerRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new BeerNotFoundException(id.toString(), BeerJson.class);
-        }
+
+
+
+    private  BeerDto getBeerDto(BeerEntity beer) {
+        BeerDto beerDto = new BeerDto();
+        beerDto.setInternalId(beer.getInternalId());
+        beerDto.setName(beer.getName());
+        beerDto.setDescription(beer.getDescription());
+        beerDto.setMeanValueTemp(beer.getMeanValueTemp());
+        return beerDto;
     }
 
     @LogEvent
@@ -58,27 +74,32 @@ public class BeerService {
         }
         else
         {
-            throw new BeerNotFoundException(id.toString(), BeerJson.class);
+            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
+            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(rb.getString("noBeerForId"), id));
         }
     }
 
-    private  BeerDto getBeerDto(BeerEntity beer) {
-        BeerDto beerDto = new BeerDto();
-        beerDto.setInternalId(beer.getInternalId());
-        beerDto.setName(beer.getName());
-        beerDto.setDescription(beer.getDescription());
-        beerDto.setMeanValueTemp(beer.getMeanValueTemp());
-        return beerDto;
-    }
     @LogEvent
-    public List<BeerDto> findAll(){
-        List<BeerEntity>  beers = beerRepository.findAll();
+    public void delete(Long id){
+        try {
+            beerRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
+            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(rb.getString("noBeerForId"), id));
+        }
+    }
+
+
+    @LogEvent
+    public List<BeerDto> findAll() {
+        List<BeerEntity> beers = beerRepository.findAll();
         if (beers.isEmpty()) {
-            throw new NoBeersException(BeerJson.class);
+            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
+            throw new NoBeersException(BeerJson.class, rb.getString("noBeerAtAll"));
         } else {
             return beers.stream().map(this::getBeerDto).collect(Collectors.toList());
         }
-        }
+    }
     @LogEvent
     public void init(){
 

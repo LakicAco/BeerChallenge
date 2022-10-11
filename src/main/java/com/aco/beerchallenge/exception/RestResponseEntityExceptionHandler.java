@@ -15,7 +15,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(BeerNotFoundException.class)
     protected ResponseEntity<Object> handleBeerNotFoundException(BeerNotFoundException exception, WebRequest webRequest) {
-        ResponseMessage bodyOfResponse = new ResponseMessage(exception.getMessage() + exception.getId());
+        ResponseMessage bodyOfResponse = new ResponseMessage(exception.getMessage());
         return createResponseEntity(HttpStatus.NOT_FOUND, false, bodyOfResponse);
     }
 
