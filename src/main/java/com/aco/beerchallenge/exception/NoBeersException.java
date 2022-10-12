@@ -10,10 +10,6 @@ public class NoBeersException extends RuntimeException {
         this.message = message;
     }
 
-    public NoBeersException(Class<?> type) {
-        this( type, "There are no any beer found!");
-    }
-
     public Class<?> getType() {
         return type;
     }

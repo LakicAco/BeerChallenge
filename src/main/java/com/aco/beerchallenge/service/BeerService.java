@@ -11,16 +11,14 @@ import com.aco.beerchallenge.repository.BeerRepositoryApi;
 import com.aco.beerchallenge.service.mapping.BeerJson;
 import com.aco.beerchallenge.service.mapping.MashTempJson;
 import com.aco.beerchallenge.service.mapping.TempJson;
-import com.aco.beerchallenge.util.CustomLocaleResolver;
 import com.aco.beerchallenge.util.LogEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -32,30 +30,13 @@ public class BeerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BeerService.class);
 
-    private final HttpServletRequest httpServletRequest;
-
-    private   ResourceBundle rb;
-
-    private final CustomLocaleResolver customLocaleResolver;
-
     private final static String GENERATE_BEER_URL = "https://api.punkapi.com/v2/beers/random";
 
-    //read all beers persisted,
-    //get a beer by id,
-    //delete a beer
+    private final BeerRepositoryApi beerRepository;
 
-    //@Autowired
-    private BeerRepositoryApi beerRepository;
-
-    public BeerService(HttpServletRequest httpServletRequest, ResourceBundle resourceBundle, CustomLocaleResolver customLocaleResolver, BeerRepositoryApi beerRepository){
-        this.httpServletRequest = httpServletRequest;
-        this.rb = resourceBundle;
-        this.customLocaleResolver = customLocaleResolver;
+    public BeerService( BeerRepositoryApi beerRepository){
         this.beerRepository = beerRepository;
     }
-
-
-
 
     private  BeerDto getBeerDto(BeerEntity beer) {
         BeerDto beerDto = new BeerDto();
@@ -74,8 +55,7 @@ public class BeerService {
         }
         else
         {
-            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
-            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(rb.getString("noBeerForId"), id));
+            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(getResourceBundle().getString("noBeerForId"), id));
         }
     }
 
@@ -84,8 +64,7 @@ public class BeerService {
         try {
             beerRepository.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
-            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
-            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(rb.getString("noBeerForId"), id));
+            throw new BeerNotFoundException(BeerJson.class, MessageFormat.format(getResourceBundle().getString("noBeerForId"), id));
         }
     }
 
@@ -94,8 +73,7 @@ public class BeerService {
     public List<BeerDto> findAll() {
         List<BeerEntity> beers = beerRepository.findAll();
         if (beers.isEmpty()) {
-            rb = ResourceBundle.getBundle("message", customLocaleResolver.resolveLocale(httpServletRequest));
-            throw new NoBeersException(BeerJson.class, rb.getString("noBeerAtAll"));
+            throw new NoBeersException(BeerJson.class, getResourceBundle().getString("noBeerAtAll"));
         } else {
             return beers.stream().map(this::getBeerDto).collect(Collectors.toList());
         }
@@ -135,6 +113,10 @@ public class BeerService {
         }
     }
 
+
+    private ResourceBundle getResourceBundle(){
+        return ResourceBundle.getBundle("message", LocaleContextHolder.getLocale());
+    }
     private BeerEntity mapBeer(BeerJson beerJson){
         BeerEntity beerEntity = new BeerEntity();
         beerEntity.setInternalId(beerJson.getInternalId());
